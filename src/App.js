@@ -1,25 +1,26 @@
 import { useState } from "react";
-import { Link, Redirect, Route, Switch, useParams } from "react-router-dom";
+import {
+  Link,
+  Redirect,
+  Route,
+  Switch,
+  useParams,
+  useRouteMatch,
+} from "react-router-dom";
 
 const UsersLayout = () => {
-  const { userId } = useParams();
-
+  const { path } = useRouteMatch();
   return (
     <div>
       <h1>Users Layout</h1>
       <Link to="/">Main Page</Link>
 
-      {userId ? (
-        <Switch>
-          <Route path={`/users/:userId/profile`} component={UserInfoPage} />
-          <Route path={`/users/:userId/edit`} component={EditUserPage} />
-          <Route path="/users/*">
-            <Redirect to={`/users/${userId}/profile`} />
-          </Route>
-        </Switch>
-      ) : (
-        <UserListPage />
-      )}
+      <Switch>
+        <Route path={path + "/:userId/profile"} component={UserInfoPage} />
+        <Route path={path + "/:userId/edit"} component={EditUserPage} />
+        <Route exact path={path} component={UserListPage} />
+        <Redirect from={path + "/:userId"} to={path + "/:userId/profile"} />
+      </Switch>
     </div>
   );
 };
@@ -88,11 +89,9 @@ function App() {
       <h1>App Layout</h1>
       <Link to="/users">Users List Page</Link>
       <Switch>
-        <Route path="/users/:userId?" component={UsersLayout} />
+        <Route path="/users" component={UsersLayout} />
         <Route exact path="/" component={MainPage} />
-        <Route path="*">
-          <Redirect to="/" />
-        </Route>
+        <Redirect from="*" to="/" />
       </Switch>
     </>
   );
